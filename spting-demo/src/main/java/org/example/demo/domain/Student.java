@@ -22,17 +22,17 @@ import java.util.UUID;
 public class Student {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "student_id")
-    private UUID studentId;
+    private Long studentId;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String studentName;
 
     @Column(name = "age")
     private Integer age;
 
-    @Column(name = "student_code")
+    @Column(name = "student_code", nullable = false, unique = true)
     private String code;
 
 }

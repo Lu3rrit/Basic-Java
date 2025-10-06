@@ -5,6 +5,7 @@ import org.example.demo.domain.Student;
 import org.example.demo.dto.request.StudentRequest;
 import org.example.demo.repository.StudentRepository;
 import org.springframework.stereotype.Service;
+import org.example.demo.repository.AttendanceRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,11 +15,16 @@ import java.util.UUID;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final StudentRepository attendanceRepository;
 
     public Student createStudent(StudentRequest student) {
         Student oldStudent = studentRepository.findByCode(student.getStudentCode());
         if (oldStudent != null) {
             throw new RuntimeException("Code đã tồn tại");
+        }
+        long count = studentRepository.count();
+        if (count >= 100) {
+            throw new RuntimeException("Cannot create more than 100 students");
         }
 
         Student newStudent = new Student();
@@ -32,12 +38,12 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public Student getStudentById(UUID id) {
+    public Student getStudentById(Long id) {
         return studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Not found ID: " + id));
     }
 
-    public Student updateStudent(UUID id, StudentRequest studentRequest) {
+    public Student updateStudent(Long id, StudentRequest studentRequest) {
         Student existingStudent = studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Not found student with ID: " + id));
         Student studentWithCode = studentRepository.findByCode(studentRequest.getStudentCode());
@@ -50,7 +56,7 @@ public class StudentService {
         return studentRepository.save(existingStudent);
     }
 
-    public void deleteStudent(UUID id) {
+    public void deleteStudent(Long id) {
         if (!studentRepository.existsById(id)) {
             throw new RuntimeException("Not found student with ID: " + id);
         }
